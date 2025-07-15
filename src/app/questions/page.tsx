@@ -1,97 +1,49 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import {Button} from "antd";
+"use server";
+import {
+  deleteQuestionUsingPost,
+  listQuestionByPageUsingPost,
+  listQuestionVoByPageUsingPost,
+} from "@/api/questionController";
+import Title from "antd/es/typography/Title";
+import { Button, message, Space, Typography } from "antd";
+import React, { useRef, useState } from "react";
+import './index.css';
+import QuestionTable from "@/components/QuestionTable";
 
-export default function Home() {
+
+/**
+ * 题目列表页面
+ * 通过searchParams可以获取到url上的搜索参数
+ * @constructor
+ */
+
+export default async function QuestionsPage({ searchParams }) {
+  //把q重命名为searchText
+  const { q: searchText } = searchParams
+  let questionList = [];
+  let total = 0
+
+  const pageSize = 200;
+  try {
+    const res = await listQuestionVoByPageUsingPost({
+      pageSize: 12,
+      sortField: "createTime",
+      sortOrder: "descend",
+      title: searchText
+    });
+    questionList = res.data.records ?? [];
+    total = res.data.total ?? 0;
+  } catch (e) {
+    message.error("获取题目列表失败，" + e.message);
+  }
+
   return (
-    <main className={styles.main}>
-      <Button type="primary">Primary Button</Button>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <div id="questionsPage" className="max-width-content">
+      <Title level={3}>题目大全</Title>
+      <QuestionTable defaultQuestionList={questionList} defaultTotal={total} defaultSearchParams={{
+        title: searchText
+      }
+      } />
+    </div>
   );
 }

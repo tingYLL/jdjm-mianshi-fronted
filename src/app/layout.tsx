@@ -19,7 +19,8 @@ const InitLayout: React.FC<
     const doInitLoginUser = useCallback(async () => {
       const res = await getLoginUserUsingGet();
       if(res.data){
-
+        //更新全局用户状态
+        dispatch(setLoginUser(res.data));
       }else{
         // setTimeout(()=>{
         //   const testUser = {
