@@ -5,6 +5,7 @@ import {
   deleteQuestionUsingPost,
   listQuestionByPageUsingPost,
   listQuestionVoByPageUsingPost,
+  searchQuestionVoByPageUsingPost,
 } from "@/api/questionController";
 import { PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
@@ -50,9 +51,17 @@ const QuestionTable: React.FC = (props: Props) => {
     //   hideInForm: true,
     // },
     {
+
+      title: "搜索",
+      dataIndex: "searchText",
+      valueType: "text",
+      hideInTable: true,
+    },
+    {
       title: "标题",
       dataIndex: "title",
       valueType: "text",
+      hideInSearch: true,
       render: (_, record) => {
         // const tagList = JSON.parse(record.tags || "[]");
         // return <TagList tagList={tagList} />
@@ -104,10 +113,11 @@ const QuestionTable: React.FC = (props: Props) => {
               return ;
             }
           }
-          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          // const sortField = Object.keys(sort)?.[0] || '_score' || 'createTime';
+          const sortField = Object.keys(sort)?.[0]  || 'createTime';
           const sortOrder = sort?.[sortField] || 'descend'  ;
 
-          const { data, code } = await listQuestionVoByPageUsingPost({
+          const { data, code } = await searchQuestionVoByPageUsingPost({
             ...params,
             sortField,
             sortOrder,

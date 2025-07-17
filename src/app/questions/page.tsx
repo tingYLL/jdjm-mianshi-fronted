@@ -3,6 +3,7 @@ import {
   deleteQuestionUsingPost,
   listQuestionByPageUsingPost,
   listQuestionVoByPageUsingPost,
+  searchQuestionVoByPageUsingPost,
 } from "@/api/questionController";
 import Title from "antd/es/typography/Title";
 import { Button, message, Space, Typography } from "antd";
@@ -25,11 +26,11 @@ export default async function QuestionsPage({ searchParams }) {
 
   const pageSize = 200;
   try {
-    const res = await listQuestionVoByPageUsingPost({
+    const res = await searchQuestionVoByPageUsingPost({
       pageSize: 12,
       sortField: "createTime",
       sortOrder: "descend",
-      title: searchText
+      searchText: searchText
     });
     questionList = res.data.records ?? [];
     total = res.data.total ?? 0;
